@@ -9,16 +9,27 @@ include(ExternalProject)
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include)
 
 set(VERSION 0.3.5)
+
+if(ANDROID_NREAL)
+    string(REPLACE "\"" "" TMP_BUILD_CONFIG ${ANDROID_NINEBOT_BUILD_CONFIG})
+    string(REPLACE " " ";" BUILD_CONFIG ${TMP_BUILD_CONFIG})
+endif()
+
 ExternalProject_Add(glog_src
-  URL https://github.com/google/glog/archive/v${VERSION}.zip
-  UPDATE_COMMAND ""
-  PATCH_COMMAND patch -p0 < ${CMAKE_SOURCE_DIR}/fix-unused-typedef-warning.patch
-  CONFIGURE_COMMAND cd ../glog_src/ && ./configure --with-pic
-    --with-gflags=${gflags_catkin_PREFIX}
-    --prefix=${CATKIN_DEVEL_PREFIX}
-  BUILD_COMMAND cd ../glog_src/ && make -j 8
-  INSTALL_COMMAND cd ../glog_src/ && make install -j 8
-)
+        URL file://${CMAKE_CURRENT_SOURCE_DIR}/v${VERSION}.zip
+        UPDATE_COMMAND ""
+        PATCH_COMMAND patch -p0 < ${CMAKE_SOURCE_DIR}/fix-unused-typedef-warning.patch &&
+        patch -p0 < ${CMAKE_SOURCE_DIR}/fix-find-gflags.patch
+        CONFIGURE_COMMAND cd ../glog_src/ && cmake .
+        -DCMAKE_INSTALL_PREFIX:PATH=${CATKIN_DEVEL_PREFIX}
+        -DBUILD_SHARED_LIBS:BOOL=true
+        -DGFLAGS_LIBRARY_PATH=${CATKIN_DEVEL_PREFIX}/lib
+        -Dgflags_DIR=${CATKIN_DEVEL_PREFIX}/lib/cmake/gflags
+        -DBUILD_TESTING=OFF
+        ${BUILD_CONFIG}
+        BUILD_COMMAND cd ../glog_src/ && make -j 8
+        INSTALL_COMMAND cd ../glog_src/ && make install -j 8
+        )
 
 cs_add_library(${PROJECT_NAME} src/dependency_tracker.cc)
 add_dependencies(${PROJECT_NAME} glog_src)

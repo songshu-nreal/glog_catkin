@@ -1,0 +1,13 @@
+--- CMakeLists.txt	2017-05-10 11:47:23.000000000 +0000
++++ CMakeLists.txt	2018-02-28 14:14:02.000000000 +0000
+@@ -10,6 +10,9 @@
+ 
+ project (google-glog)
+ 
++link_directories("${GFLAGS_LIBRARY_PATH}")
++message("GFLAGS_LIBRARY_PATH=" ${GFLAGS_LIBRARY_PATH})
++
+ enable_testing ()
+ 
+ set (GLOG_MAJOR_VERSION 0)
+ 
