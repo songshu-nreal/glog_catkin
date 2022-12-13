@@ -22,7 +22,7 @@ ExternalProject_Add(glog_src
         patch -p0 < ${CMAKE_SOURCE_DIR}/fix-find-gflags.patch
         CONFIGURE_COMMAND cd ../glog_src/ && cmake .
         -DCMAKE_INSTALL_PREFIX:PATH=${CATKIN_DEVEL_PREFIX}
-        -DBUILD_SHARED_LIBS:BOOL=true
+        -DBUILD_SHARED_LIBS:BOOL=false
         -DGFLAGS_LIBRARY_PATH=${CATKIN_DEVEL_PREFIX}/lib
         -Dgflags_DIR=${CATKIN_DEVEL_PREFIX}/lib/cmake/gflags
         -DBUILD_TESTING=OFF
@@ -33,7 +33,8 @@ ExternalProject_Add(glog_src
 
 cs_add_library(${PROJECT_NAME} src/dependency_tracker.cc)
 add_dependencies(${PROJECT_NAME} glog_src)
-target_link_libraries(${PROJECT_NAME} ${CATKIN_DEVEL_PREFIX}/lib/libglog${CMAKE_SHARED_LIBRARY_SUFFIX})
+#target_link_libraries(${PROJECT_NAME} ${CATKIN_DEVEL_PREFIX}/lib/libglog${CMAKE_SHARED_LIBRARY_SUFFIX})
+target_link_libraries(${PROJECT_NAME} ${CATKIN_DEVEL_PREFIX}/lib/libglog${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 cs_install()
 
